@@ -1,0 +1,24 @@
+# FunctionGraph deployment package
+fg-resource-monitor.zip
+function.zip
+*.zip
+
+# Claude AI
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
