@@ -18,15 +18,16 @@ FunctionGraph function for automated resource reports via email.
 - IAM → Agencies → Create Agency
 - Type: `Cloud service` → `FunctionGraph`
 - Add permissions:
-  - `ECS FullAccess`
-  - `RDS ReadOnlyAccess` 
+  - `ECS ReadOnlyAccess`
+  - `RDS ReadOnlyAccess`
+  - `OBS ListBucket`
   - `EVS ReadOnlyAccess`
   - `VPC ReadOnlyAccess`
   - `DMS ReadOnlyAccess`
   - `DCS ReadOnlyAccess`
   - `APIG ReadOnlyAccess`
   - `CCE ReadOnlyAccess`
-  - `SMN FullAccess`
+  - `SMN MessagePublish`
 
 ### 3. Deploy Function
 
