@@ -29,17 +29,16 @@ FunctionGraph function for automated resource reports via email.
   - `SMN FullAccess`
 
 ### 3. Deploy Function
-```bash
-zip -r function.zip index.py requirements.txt src/
-```
 
-- FunctionGraph → Create Function
-- Runtime: `Python 3.9`
-- Handler: `index.handler`
-- Agency: Select created agency
-- Memory: `128 MB`
-- Timeout: `30s`
-- Upload ZIP
+```bash
+cd terraform
+cp .env-template .env
+terraform init
+terraform apply
+```
+- Automatically creates ZIP package
+- Deploys function with correct settings
+- Updates code on every apply
 
 ### 4. Environment Variable
 - `SMN_TOPIC_URN`: urn:smn:eu-de:PROJECT_ID:resource-monitor
