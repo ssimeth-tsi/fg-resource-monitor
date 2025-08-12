@@ -22,3 +22,6 @@ venv/
 *.swp
 *.swo
 .DS_Store
+
+# Environment
+.env

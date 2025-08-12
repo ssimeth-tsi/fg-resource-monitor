@@ -15,6 +15,10 @@ from rds import list_rds_instances
 from obs import list_obs_buckets
 from evs import list_evs_volumes
 from vpc import list_vpcs, list_subnets
+from dms import list_dms_resources
+from dcs import list_dcs_instances
+from apig import list_apig_instances
+from cce import list_cce_clusters
 from report import generate_html_report, send_email_report
 
 
@@ -94,6 +98,38 @@ def handler(event, context):
             print(f"⚠️ Error collecting Subnets: {str(e)}")
             all_resources['subnet'] = []
         
+        # DMS (Message Service)
+        print("\n📍 Collecting DMS resources...")
+        try:
+            all_resources['dms'] = list_dms_resources(project_id, token, domain_id)
+        except Exception as e:
+            print(f"⚠️ Error collecting DMS resources: {str(e)}")
+            all_resources['dms'] = []
+        
+        # DCS (Cache Service)
+        print("\n📍 Collecting DCS instances...")
+        try:
+            all_resources['dcs'] = list_dcs_instances(project_id, token, domain_id)
+        except Exception as e:
+            print(f"⚠️ Error collecting DCS instances: {str(e)}")
+            all_resources['dcs'] = []
+        
+        # API Gateway
+        print("\n📍 Collecting API Gateway instances...")
+        try:
+            all_resources['apig'] = list_apig_instances(project_id, token, domain_id)
+        except Exception as e:
+            print(f"⚠️ Error collecting API Gateway instances: {str(e)}")
+            all_resources['apig'] = []
+        
+        # CCE (Container Engine)
+        print("\n📍 Collecting CCE clusters...")
+        try:
+            all_resources['cce'] = list_cce_clusters(project_id, token, domain_id)
+        except Exception as e:
+            print(f"⚠️ Error collecting CCE clusters: {str(e)}")
+            all_resources['cce'] = []
+        
         print("-" * 50)
         
         # Generate and send report
@@ -111,7 +147,11 @@ def handler(event, context):
             "obs": len(all_resources.get('obs', [])),
             "evs": len(all_resources.get('evs', [])),
             "vpc": len(all_resources.get('vpc', [])),
-            "subnet": len(all_resources.get('subnet', []))
+            "subnet": len(all_resources.get('subnet', [])),
+            "dms": len(all_resources.get('dms', [])),
+            "dcs": len(all_resources.get('dcs', [])),
+            "apig": len(all_resources.get('apig', [])),
+            "cce": len(all_resources.get('cce', []))
         }
         
         total_resources = sum(resource_counts.values())

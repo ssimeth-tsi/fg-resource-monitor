@@ -3,7 +3,7 @@
 FunctionGraph function for automated resource reports via email.
 
 ## Features
-- Lists all resources: ECS, RDS, OBS, EVS, VPC, Subnets
+- Lists all resources: ECS, RDS, OBS, EVS, VPC, Subnets, DMS, DCS, APIG, CCE
 - HTML email report
 - Timer trigger for automated reports
 
@@ -22,6 +22,10 @@ FunctionGraph function for automated resource reports via email.
   - `RDS ReadOnlyAccess` 
   - `EVS ReadOnlyAccess`
   - `VPC ReadOnlyAccess`
+  - `DMS ReadOnlyAccess`
+  - `DCS ReadOnlyAccess`
+  - `APIG ReadOnlyAccess`
+  - `CCE ReadOnlyAccess`
   - `SMN FullAccess`
 
 ### 3. Deploy Function

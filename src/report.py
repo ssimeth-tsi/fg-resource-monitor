@@ -41,12 +41,16 @@ def generate_html_report(all_resources):
             <div class="summary">
                 <h3>📊 Resource Summary</h3>
                 <ul>
-                    <li>💻 <strong>ECS Instances:</strong> {len(all_resources.get('ecs', []))}</li>
-                    <li>🗄️ <strong>RDS Instances:</strong> {len(all_resources.get('rds', []))}</li>
-                    <li>📦 <strong>OBS Buckets:</strong> {len(all_resources.get('obs', []))}</li>
-                    <li>💾 <strong>EVS Volumes:</strong> {len(all_resources.get('evs', []))}</li>
                     <li>🔗 <strong>VPCs:</strong> {len(all_resources.get('vpc', []))}</li>
                     <li>🌐 <strong>Subnets:</strong> {len(all_resources.get('subnet', []))}</li>
+                    <li>💻 <strong>ECS Instances:</strong> {len(all_resources.get('ecs', []))}</li>
+                    <li>💾 <strong>EVS Volumes:</strong> {len(all_resources.get('evs', []))}</li>
+                    <li>🗄️ <strong>RDS Instances:</strong> {len(all_resources.get('rds', []))}</li>
+                    <li>📦 <strong>OBS Buckets:</strong> {len(all_resources.get('obs', []))}</li>
+                    <li>📨 <strong>DMS Instances:</strong> {len(all_resources.get('dms', []))}</li>
+                    <li>⚡ <strong>DCS Instances:</strong> {len(all_resources.get('dcs', []))}</li>
+                    <li>🌉 <strong>APIG Instances:</strong> {len(all_resources.get('apig', []))}</li>
+                    <li>☸️ <strong>CCE Clusters:</strong> {len(all_resources.get('cce', []))}</li>
                 </ul>
                 <p style="margin-top: 15px; font-size: 14px;">
                     <strong>Total Resources:</strong> {sum(len(v) for v in all_resources.values() if isinstance(v, list))}
@@ -54,6 +58,59 @@ def generate_html_report(all_resources):
             </div>
     """
     
+    # VPCs (first)
+    if all_resources.get('vpc'):
+        html += """
+        <h2>🔗 VPCs</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>CIDR</th>
+                <th>Status</th>
+            </tr>
+        """
+        for vpc in all_resources['vpc']:
+            html += f"""
+            <tr>
+                <td><strong>{vpc['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{vpc['id']}</td>
+                <td>{vpc['cidr']}</td>
+                <td>{vpc['status']}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>🔗 VPCs</h2><p class="no-data">No VPCs found</p>'
+    
+    # Subnets (second)
+    if all_resources.get('subnet'):
+        html += """
+        <h2>🌐 Subnets</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>CIDR</th>
+                <th>VPC ID</th>
+                <th>Status</th>
+            </tr>
+        """
+        for subnet in all_resources['subnet']:
+            html += f"""
+            <tr>
+                <td><strong>{subnet['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{subnet['id']}</td>
+                <td>{subnet['cidr']}</td>
+                <td style="font-size: 12px; color: #7f8c8d;">{subnet['vpc_id']}</td>
+                <td>{subnet['status']}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>🌐 Subnets</h2><p class="no-data">No Subnets found</p>'
+    
+    # ECS Instances
     if all_resources.get('ecs'):
         html += """
         <h2>💻 ECS Instances</h2>
@@ -81,54 +138,7 @@ def generate_html_report(all_resources):
     else:
         html += '<h2>💻 ECS Instances</h2><p class="no-data">No ECS instances found</p>'
     
-    if all_resources.get('rds'):
-        html += """
-        <h2>🗄️ RDS Instances</h2>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>ID</th>
-                <th>Engine</th>
-                <th>Flavor</th>
-                <th>Status</th>
-                <th>Created</th>
-            </tr>
-        """
-        for rds in all_resources['rds']:
-            html += f"""
-            <tr>
-                <td><strong>{rds['name']}</strong></td>
-                <td style="font-size: 12px; color: #7f8c8d;">{rds['id']}</td>
-                <td>{rds['engine']}</td>
-                <td>{rds['flavor']}</td>
-                <td>{rds['status']}</td>
-                <td>{rds['created']}</td>
-            </tr>
-            """
-        html += "</table>"
-    else:
-        html += '<h2>🗄️ RDS Instances</h2><p class="no-data">No RDS instances found</p>'
-    
-    if all_resources.get('obs'):
-        html += """
-        <h2>📦 OBS Buckets</h2>
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Created</th>
-            </tr>
-        """
-        for bucket in all_resources['obs']:
-            html += f"""
-            <tr>
-                <td><strong>{bucket['name']}</strong></td>
-                <td>{bucket['created']}</td>
-            </tr>
-            """
-        html += "</table>"
-    else:
-        html += '<h2>📦 OBS Buckets</h2><p class="no-data">No OBS buckets found</p>'
-    
+    # EVS Volumes (directly after ECS)
     if all_resources.get('evs'):
         html += """
         <h2>💾 EVS Volumes</h2>
@@ -157,55 +167,175 @@ def generate_html_report(all_resources):
     else:
         html += '<h2>💾 EVS Volumes</h2><p class="no-data">No EVS volumes found</p>'
     
-    if all_resources.get('vpc'):
+    # RDS Instances
+    if all_resources.get('rds'):
         html += """
-        <h2>🔗 VPCs</h2>
+        <h2>🗄️ RDS Instances</h2>
         <table>
             <tr>
                 <th>Name</th>
                 <th>ID</th>
-                <th>CIDR</th>
+                <th>Engine</th>
+                <th>Flavor</th>
                 <th>Status</th>
+                <th>Created</th>
             </tr>
         """
-        for vpc in all_resources['vpc']:
+        for rds in all_resources['rds']:
             html += f"""
             <tr>
-                <td><strong>{vpc['name']}</strong></td>
-                <td style="font-size: 12px; color: #7f8c8d;">{vpc['id']}</td>
-                <td>{vpc['cidr']}</td>
-                <td>{vpc['status']}</td>
+                <td><strong>{rds['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{rds['id']}</td>
+                <td>{rds['engine']}</td>
+                <td>{rds['flavor']}</td>
+                <td>{rds['status']}</td>
+                <td>{rds['created']}</td>
             </tr>
             """
         html += "</table>"
     else:
-        html += '<h2>🔗 VPCs</h2><p class="no-data">No VPCs found</p>'
+        html += '<h2>🗄️ RDS Instances</h2><p class="no-data">No RDS instances found</p>'
     
-    if all_resources.get('subnet'):
+    # OBS Buckets
+    if all_resources.get('obs'):
         html += """
-        <h2>🌐 Subnets</h2>
+        <h2>📦 OBS Buckets</h2>
         <table>
             <tr>
                 <th>Name</th>
-                <th>ID</th>
-                <th>CIDR</th>
-                <th>VPC ID</th>
-                <th>Status</th>
+                <th>Created</th>
             </tr>
         """
-        for subnet in all_resources['subnet']:
+        for bucket in all_resources['obs']:
             html += f"""
             <tr>
-                <td><strong>{subnet['name']}</strong></td>
-                <td style="font-size: 12px; color: #7f8c8d;">{subnet['id']}</td>
-                <td>{subnet['cidr']}</td>
-                <td style="font-size: 12px; color: #7f8c8d;">{subnet['vpc_id']}</td>
-                <td>{subnet['status']}</td>
+                <td><strong>{bucket['name']}</strong></td>
+                <td>{bucket['created']}</td>
             </tr>
             """
         html += "</table>"
     else:
-        html += '<h2>🌐 Subnets</h2><p class="no-data">No Subnets found</p>'
+        html += '<h2>📦 OBS Buckets</h2><p class="no-data">No OBS buckets found</p>'
+    
+    # DMS Instances
+    if all_resources.get('dms'):
+        html += """
+        <h2>📨 DMS Instances</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Engine Version</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        """
+        for dms in all_resources['dms']:
+            html += f"""
+            <tr>
+                <td><strong>{dms.get('name', 'Unknown')}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{dms.get('id', 'Unknown')}</td>
+                <td>{dms.get('type', 'Unknown')}</td>
+                <td>{dms.get('engine_version', '-')}</td>
+                <td>{dms.get('status', '-')}</td>
+                <td>{dms.get('created', 'Unknown')}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>📨 DMS Instances</h2><p class="no-data">No DMS instances found</p>'
+    
+    # DCS Instances
+    if all_resources.get('dcs'):
+        html += """
+        <h2>⚡ DCS Instances</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Version</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        """
+        for dcs in all_resources['dcs']:
+            html += f"""
+            <tr>
+                <td><strong>{dcs['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{dcs['id']}</td>
+                <td>{dcs['type']}</td>
+                <td>{dcs['engine_version']}</td>
+                <td>{dcs['capacity']}</td>
+                <td>{dcs['status']}</td>
+                <td>{dcs['created']}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>⚡ DCS Instances</h2><p class="no-data">No DCS instances found</p>'
+    
+    # APIG Instances
+    if all_resources.get('apig'):
+        html += """
+        <h2>🌉 APIG Instances</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Spec</th>
+                <th>APIs</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        """
+        for apig in all_resources['apig']:
+            html += f"""
+            <tr>
+                <td><strong>{apig['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{apig['id']}</td>
+                <td>{apig['spec']}</td>
+                <td>{apig['api_count']}</td>
+                <td>{apig['status']}</td>
+                <td>{apig['created']}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>🌉 APIG Instances</h2><p class="no-data">No APIG instances found</p>'
+    
+    # CCE Clusters
+    if all_resources.get('cce'):
+        html += """
+        <h2>☸️ CCE Clusters</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Version</th>
+                <th>Nodes</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        """
+        for cce in all_resources['cce']:
+            html += f"""
+            <tr>
+                <td><strong>{cce['name']}</strong></td>
+                <td style="font-size: 12px; color: #7f8c8d;">{cce['id']}</td>
+                <td>{cce['type']}</td>
+                <td>{cce['version']}</td>
+                <td>{cce['node_count']}</td>
+                <td>{cce['status']}</td>
+                <td>{cce['created']}</td>
+            </tr>
+            """
+        html += "</table>"
+    else:
+        html += '<h2>☸️ CCE Clusters</h2><p class="no-data">No CCE clusters found</p>'
     
     html += """
             <div class="footer">
